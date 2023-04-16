@@ -1,20 +1,21 @@
 name: Loc
 on:
   pull_request:
-    types:
-      - opened
+    types: [opened]
 jobs:
-  PR-Comment:
+  Comment-Loc:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
-    - name: PR Comment
-      uses: actions/github-script@v2
+    - name: Comment Lines of Code
+      uses: actions/github-script@v6
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          github.issues.createComment({
-            issue_number: ${{ github.event.number }},
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'This is a test.'
+            body: 'This is a test of the action.'
           })
