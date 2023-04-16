@@ -8,13 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: PR Comment
-      uses: actions/github-script@v2
+      uses: actions/github-script@v6
       with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
+        token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          github.issues.createComment({
-            issue_number: ${{ github.event.number }},
+          github.rest.issues.createComment({
+            issue_number: context.issue.number
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'This is a test.'
+            body: 'This is a test of the action.'
           })
