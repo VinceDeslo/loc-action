@@ -16,5 +16,5 @@ jobs:
             issue_number: ${{ github.event.number }},
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'This is a test.'
+            body: 'This is a test of the action.'
           })
