@@ -1,20 +1,49 @@
 name: Loc
 on:
   pull_request:
-    types:
+    types: 
       - opened
 jobs:
-  PR-Comment:
+  Comment-Loc:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
-    - name: PR Comment
-      uses: actions/github-script@v2
+    - name: Checkout Codebase
+      uses: actions/checkout@v3
+      with:
+        ref: main
+
+    - name: Install Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '^1.20.3' 
+
+    - name: Echo Go version
+      run: go version
+
+    - name: Install SCC
+      run: go install github.com/boyter/scc/v3@latest
+
+    - name: Run SCC
+      id: scc-run
+      run: |
+        {
+          echo 'scc_result<<EOF'
+          echo '### Code line count analysis'
+          scc -f html-table ${{ github.workspace }}
+          echo 'EOF'
+        } >> $GITHUB_OUTPUT
+
+    - name: Comment LOC Analysis
+      uses: actions/github-script@v6
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          github.issues.createComment({
-            issue_number: ${{ github.event.number }},
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'This is a test.'
+            body: `${{ steps.scc-run.outputs.SCC_RESULT }}`
           })
